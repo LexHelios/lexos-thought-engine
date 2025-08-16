@@ -6,17 +6,41 @@ import {
   Settings,
   Brain,
   Terminal,
-  Image
+  Image,
+  GitBranch,
+  Code
 } from 'lucide-react';
 
 export const DesktopIcons = () => {
+  const handleDoubleClick = (iconId: string) => {
+    const windowManager = (window as any).windowManager;
+    
+    switch (iconId) {
+      case 'github-manager':
+        windowManager?.openGitHubManager();
+        break;
+      case 'terminal':
+        windowManager?.openTerminal();
+        break;
+      case 'code-editor':
+        windowManager?.openCodeEditor();
+        break;
+      case 'file-manager':
+        windowManager?.openFileManager();
+        break;
+      default:
+        console.log(`Opening ${iconId}`);
+    }
+  };
+
   const desktopIcons = [
     { id: 'ai-core', name: 'AI Core', icon: <Brain className="w-8 h-8" />, x: 50, y: 50 },
-    { id: 'terminal', name: 'Terminal', icon: <Terminal className="w-8 h-8" />, x: 50, y: 150 },
-    { id: 'documents', name: 'Documents', icon: <Folder className="w-8 h-8" />, x: 50, y: 250 },
-    { id: 'readme', name: 'README.txt', icon: <FileText className="w-8 h-8" />, x: 50, y: 350 },
-    { id: 'gallery', name: 'Gallery', icon: <Image className="w-8 h-8" />, x: 150, y: 50 },
-    { id: 'settings', name: 'Settings', icon: <Settings className="w-8 h-8" />, x: 150, y: 150 },
+    { id: 'github-manager', name: 'GitHub', icon: <GitBranch className="w-8 h-8" />, x: 50, y: 150 },
+    { id: 'terminal', name: 'Terminal', icon: <Terminal className="w-8 h-8" />, x: 50, y: 250 },
+    { id: 'code-editor', name: 'Code Editor', icon: <Code className="w-8 h-8" />, x: 50, y: 350 },
+    { id: 'file-manager', name: 'Files', icon: <Folder className="w-8 h-8" />, x: 150, y: 50 },
+    { id: 'gallery', name: 'Gallery', icon: <Image className="w-8 h-8" />, x: 150, y: 150 },
+    { id: 'settings', name: 'Settings', icon: <Settings className="w-8 h-8" />, x: 150, y: 250 },
     { id: 'trash', name: 'Trash', icon: <Trash2 className="w-8 h-8" />, x: 150, y: 450 },
   ];
 
@@ -31,9 +55,7 @@ export const DesktopIcons = () => {
           <Button
             variant="ghost"
             className="w-20 h-20 flex flex-col items-center justify-center gap-1 hover:bg-white/10 rounded-lg group transition-all duration-300"
-            onDoubleClick={() => {
-              console.log(`Opening ${icon.name}`);
-            }}
+            onDoubleClick={() => handleDoubleClick(icon.id)}
           >
             <div className="text-white drop-shadow-lg group-hover:text-accent transition-colors">
               {icon.icon}

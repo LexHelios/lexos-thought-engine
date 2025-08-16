@@ -3,6 +3,7 @@ import { DesktopTaskbar } from '@/components/DesktopTaskbar';
 import { AITerminal } from '@/components/AITerminal';
 import { AppLauncher } from '@/components/AppLauncher';
 import { DesktopIcons } from '@/components/DesktopIcons';
+import { WindowManager } from '@/components/WindowManager';
 import { Button } from '@/components/ui/button';
 import { Grid3X3 } from 'lucide-react';
 import neuralBg from '@/assets/neural-bg.jpg';
@@ -45,6 +46,9 @@ const Index = () => {
           AI-powered operating system interface. Double-click desktop icons or use the AI terminal.
         </p>
       </div>
+      
+      {/* Window Manager for Applications */}
+      <WindowManager />
       
       {/* App Launcher Modal */}
       <AppLauncher 
