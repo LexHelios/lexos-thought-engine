@@ -37,9 +37,9 @@ export const DesktopIcons = () => {
   const desktopIcons = [
     { id: 'ai-core', name: 'AI Core', icon: <Brain className="w-8 h-8" />, x: 50, y: 50 },
     { id: 'github-manager', name: 'GitHub', icon: <GitBranch className="w-8 h-8" />, x: 50, y: 150 },
-    { id: 'terminal', name: 'Terminal', icon: <Terminal className="w-8 h-8" />, x: 50, y: 250 },
-    { id: 'code-editor', name: 'Code Editor', icon: <Code className="w-8 h-8" />, x: 50, y: 350 },
-    { id: 'file-manager', name: 'Files', icon: <Folder className="w-8 h-8" />, x: 150, y: 50 },
+    { id: 'terminal', name: 'Research Agent', icon: <Terminal className="w-8 h-8" />, x: 50, y: 250 },
+    { id: 'code-editor', name: 'Code Agent', icon: <Code className="w-8 h-8" />, x: 50, y: 350 },
+    { id: 'file-manager', name: 'Browser Agent', icon: <Folder className="w-8 h-8" />, x: 150, y: 50 },
     { id: 'gallery', name: 'Gallery', icon: <Image className="w-8 h-8" />, x: 150, y: 150 },
     { id: 'settings', name: 'Settings', icon: <Settings className="w-8 h-8" />, x: 150, y: 250 },
     { id: 'trash', name: 'Trash', icon: <Trash2 className="w-8 h-8" />, x: 150, y: 450 },

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { GitHubManager } from '@/components/GitHubManager';
+import { AgentWorkspace } from '@/components/AgentWorkspace';
 import { 
   Terminal, 
   X, 
@@ -139,31 +140,25 @@ export const WindowManager = () => {
       'code-editor',
       'Code Editor',
       <Code className="w-4 h-4" />,
-      <div className="p-4 h-full flex items-center justify-center text-muted-foreground">
-        Code Editor - Coming Soon
-      </div>
+      <AgentWorkspace agentId="code-agent" agentType="coder" />
     );
   };
 
   const openFileManager = () => {
     openWindow(
       'file-manager',
-      'File Manager',
+      'Browser Agent',
       <Folder className="w-4 h-4" />,
-      <div className="p-4 h-full flex items-center justify-center text-muted-foreground">
-        File Manager - Coming Soon
-      </div>
+      <AgentWorkspace agentId="browser-agent" agentType="browser" />
     );
   };
 
   const openTerminal = () => {
     openWindow(
       'terminal',
-      'Terminal',
+      'Research Agent',
       <Terminal className="w-4 h-4" />,
-      <div className="p-4 h-full flex items-center justify-center text-muted-foreground">
-        Advanced Terminal - Coming Soon
-      </div>
+      <AgentWorkspace agentId="research-agent" agentType="researcher" />
     );
   };
 

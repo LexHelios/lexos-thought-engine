@@ -1,0 +1,392 @@
+import { useState, useEffect, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Card } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { 
+  Brain, 
+  Eye, 
+  Code, 
+  Globe, 
+  Terminal, 
+  Play, 
+  Pause, 
+  RotateCcw,
+  Activity,
+  FileText,
+  MessageSquare
+} from 'lucide-react';
+
+interface AgentWorkspaceProps {
+  agentId: string;
+  agentType: 'coder' | 'browser' | 'thinker' | 'researcher';
+}
+
+interface AgentState {
+  status: 'idle' | 'thinking' | 'working' | 'browsing' | 'coding';
+  currentTask: string;
+  thoughts: string[];
+  browserUrl?: string;
+  codeFiles?: { name: string; content: string }[];
+  lastActivity: string;
+}
+
+interface ActivityLog {
+  id: string;
+  timestamp: string;
+  type: 'thought' | 'action' | 'code' | 'browse';
+  content: string;
+  metadata?: any;
+}
+
+export const AgentWorkspace = ({ agentId, agentType }: AgentWorkspaceProps) => {
+  const [agentState, setAgentState] = useState<AgentState>({
+    status: 'idle',
+    currentTask: '',
+    thoughts: [],
+    lastActivity: 'Initialized'
+  });
+  const [activityLog, setActivityLog] = useState<ActivityLog[]>([]);
+  const [isRunning, setIsRunning] = useState(false);
+  const [browserView, setBrowserView] = useState<string>('');
+  const { toast } = useToast();
+  const wsRef = useRef<WebSocket | null>(null);
+  const browserFrameRef = useRef<HTMLIFrameElement>(null);
+
+  // Connect to backend WebSocket for real-time agent updates
+  useEffect(() => {
+    connectToAgent();
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+    };
+  }, [agentId]);
+
+  const connectToAgent = async () => {
+    try {
+      // Call backend API to initialize agent
+      const { data, error } = await supabase.functions.invoke('agent-manager', {
+        body: { 
+          action: 'initialize',
+          agentId,
+          agentType 
+        }
+      });
+
+      if (error) throw error;
+
+      // Establish WebSocket connection for real-time updates
+      const wsUrl = `wss://${window.location.hostname}/api/agents/${agentId}/ws`;
+      wsRef.current = new WebSocket(wsUrl);
+
+      wsRef.current.onopen = () => {
+        console.log(`Connected to agent ${agentId}`);
+        toast({
+          title: "Agent Connected",
+          description: `${agentType} agent is now online`
+        });
+      };
+
+      wsRef.current.onmessage = (event) => {
+        const update = JSON.parse(event.data);
+        handleAgentUpdate(update);
+      };
+
+      wsRef.current.onerror = () => {
+        toast({
+          title: "Connection Error",
+          description: "Failed to connect to agent backend",
+          variant: "destructive"
+        });
+      };
+
+    } catch (error) {
+      console.error('Failed to connect to agent:', error);
+      toast({
+        title: "Agent Error",
+        description: "Failed to initialize agent workspace",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleAgentUpdate = (update: any) => {
+    const { type, data } = update;
+
+    switch (type) {
+      case 'state_change':
+        setAgentState(prev => ({ ...prev, ...data }));
+        break;
+      case 'thought':
+        setAgentState(prev => ({
+          ...prev,
+          thoughts: [...prev.thoughts, data.content]
+        }));
+        addActivityLog('thought', data.content);
+        break;
+      case 'browser_update':
+        setBrowserView(data.screenshot);
+        setAgentState(prev => ({ ...prev, browserUrl: data.url }));
+        addActivityLog('browse', `Navigated to ${data.url}`);
+        break;
+      case 'code_update':
+        setAgentState(prev => ({
+          ...prev,
+          codeFiles: data.files
+        }));
+        addActivityLog('code', `Modified ${data.fileName}`);
+        break;
+      case 'action':
+        addActivityLog('action', data.description, data.metadata);
+        break;
+    }
+  };
+
+  const addActivityLog = (type: ActivityLog['type'], content: string, metadata?: any) => {
+    const newLog: ActivityLog = {
+      id: Date.now().toString(),
+      timestamp: new Date().toISOString(),
+      type,
+      content,
+      metadata
+    };
+    setActivityLog(prev => [newLog, ...prev].slice(0, 100)); // Keep last 100 logs
+  };
+
+  const startAgent = async () => {
+    try {
+      const { error } = await supabase.functions.invoke('agent-manager', {
+        body: { 
+          action: 'start',
+          agentId,
+          task: agentState.currentTask || `Start ${agentType} tasks`
+        }
+      });
+
+      if (error) throw error;
+      setIsRunning(true);
+    } catch (error) {
+      toast({
+        title: "Failed to start agent",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const pauseAgent = async () => {
+    try {
+      const { error } = await supabase.functions.invoke('agent-manager', {
+        body: { 
+          action: 'pause',
+          agentId
+        }
+      });
+
+      if (error) throw error;
+      setIsRunning(false);
+    } catch (error) {
+      toast({
+        title: "Failed to pause agent",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const resetAgent = async () => {
+    try {
+      const { error } = await supabase.functions.invoke('agent-manager', {
+        body: { 
+          action: 'reset',
+          agentId
+        }
+      });
+
+      if (error) throw error;
+      setAgentState({
+        status: 'idle',
+        currentTask: '',
+        thoughts: [],
+        lastActivity: 'Reset'
+      });
+      setActivityLog([]);
+      setBrowserView('');
+      setIsRunning(false);
+    } catch (error) {
+      toast({
+        title: "Failed to reset agent",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const getStatusIcon = () => {
+    switch (agentState.status) {
+      case 'thinking': return <Brain className="w-4 h-4 animate-pulse text-purple-500" />;
+      case 'working': return <Activity className="w-4 h-4 animate-spin text-green-500" />;
+      case 'browsing': return <Globe className="w-4 h-4 text-blue-500" />;
+      case 'coding': return <Code className="w-4 h-4 text-orange-500" />;
+      default: return <Eye className="w-4 h-4 text-gray-500" />;
+    }
+  };
+
+  const getActivityIcon = (type: ActivityLog['type']) => {
+    switch (type) {
+      case 'thought': return <Brain className="w-3 h-3 text-purple-500" />;
+      case 'action': return <Activity className="w-3 h-3 text-green-500" />;
+      case 'code': return <Code className="w-3 h-3 text-orange-500" />;
+      case 'browse': return <Globe className="w-3 h-3 text-blue-500" />;
+      default: return <FileText className="w-3 h-3 text-gray-500" />;
+    }
+  };
+
+  return (
+    <div className="h-full flex flex-col bg-background">
+      {/* Agent Header */}
+      <div className="flex items-center justify-between p-4 border-b border-border">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {getStatusIcon()}
+            <h3 className="font-semibold capitalize">{agentType} Agent</h3>
+            <Badge variant={isRunning ? "default" : "secondary"}>
+              {agentState.status}
+            </Badge>
+          </div>
+          <Separator orientation="vertical" className="h-6" />
+          <span className="text-sm text-muted-foreground">
+            {agentState.lastActivity}
+          </span>
+        </div>
+        
+        <div className="flex gap-2">
+          {!isRunning ? (
+            <Button onClick={startAgent} size="sm" className="bg-green-600 hover:bg-green-700">
+              <Play className="w-4 h-4 mr-2" />
+              Start
+            </Button>
+          ) : (
+            <Button onClick={pauseAgent} size="sm" variant="outline">
+              <Pause className="w-4 h-4 mr-2" />
+              Pause
+            </Button>
+          )}
+          <Button onClick={resetAgent} size="sm" variant="outline">
+            <RotateCcw className="w-4 h-4 mr-2" />
+            Reset
+          </Button>
+        </div>
+      </div>
+
+      <div className="flex-1 flex overflow-hidden">
+        {/* Main Workspace View */}
+        <div className="flex-1 flex flex-col">
+          {agentType === 'browser' && (
+            <div className="flex-1 bg-white">
+              {browserView ? (
+                <img 
+                  src={`data:image/png;base64,${browserView}`}
+                  alt="Agent browser view"
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <div className="h-full flex items-center justify-center text-muted-foreground">
+                  <Globe className="w-8 h-8 mr-2" />
+                  Agent browser will appear here
+                </div>
+              )}
+            </div>
+          )}
+
+          {agentType === 'coder' && (
+            <div className="flex-1 p-4">
+              {agentState.codeFiles && agentState.codeFiles.length > 0 ? (
+                <div className="space-y-4">
+                  {agentState.codeFiles.map((file, index) => (
+                    <Card key={index} className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <FileText className="w-4 h-4" />
+                        <span className="font-mono text-sm">{file.name}</span>
+                      </div>
+                      <pre className="bg-muted p-3 rounded text-xs overflow-auto max-h-64">
+                        <code>{file.content}</code>
+                      </pre>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="h-full flex items-center justify-center text-muted-foreground">
+                  <Code className="w-8 h-8 mr-2" />
+                  Agent will show code changes here
+                </div>
+              )}
+            </div>
+          )}
+
+          {(agentType === 'thinker' || agentType === 'researcher') && (
+            <div className="flex-1 p-4">
+              <Card className="h-full p-4">
+                <h4 className="font-semibold mb-4 flex items-center gap-2">
+                  <Brain className="w-4 h-4" />
+                  Current Thoughts
+                </h4>
+                <ScrollArea className="h-full">
+                  {agentState.thoughts.length > 0 ? (
+                    <div className="space-y-2">
+                      {agentState.thoughts.map((thought, index) => (
+                        <div key={index} className="p-2 bg-muted rounded text-sm">
+                          {thought}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-32 text-muted-foreground">
+                      <MessageSquare className="w-6 h-6 mr-2" />
+                      Agent thoughts will appear here
+                    </div>
+                  )}
+                </ScrollArea>
+              </Card>
+            </div>
+          )}
+        </div>
+
+        {/* Activity Sidebar */}
+        <div className="w-80 border-l border-border flex flex-col">
+          <div className="p-4 border-b border-border">
+            <h4 className="font-semibold flex items-center gap-2">
+              <Activity className="w-4 h-4" />
+              Activity Log
+            </h4>
+          </div>
+          <ScrollArea className="flex-1">
+            <div className="p-4 space-y-2">
+              {activityLog.length > 0 ? (
+                activityLog.map((log) => (
+                  <div key={log.id} className="flex gap-2 p-2 rounded bg-muted/50">
+                    {getActivityIcon(log.type)}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs text-muted-foreground">
+                        {new Date(log.timestamp).toLocaleTimeString()}
+                      </div>
+                      <div className="text-sm break-words">{log.content}</div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center text-muted-foreground py-8">
+                  No activity yet
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+        </div>
+      </div>
+    </div>
+  );
+};
