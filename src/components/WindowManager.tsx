@@ -162,12 +162,40 @@ export const WindowManager = () => {
     );
   };
 
+  const openCollaboration = () => {
+    openWindow(
+      'collaboration',
+      'Agent Collaboration',
+      <FileText className="w-4 h-4" />,
+      <div className="h-full">
+        <div className="p-4 text-center text-muted-foreground">
+          Agent Collaboration feature coming soon!
+        </div>
+      </div>
+    );
+  };
+
+  const openSystemMonitor = () => {
+    openWindow(
+      'system-monitor',
+      'System Monitor', 
+      <FileText className="w-4 h-4" />,
+      <div className="h-full">
+        <div className="p-4 text-center text-muted-foreground">
+          System Monitor feature coming soon!
+        </div>
+      </div>
+    );
+  };
+
   // Expose functions globally for desktop icons to use
   (window as any).windowManager = {
     openGitHubManager,
     openCodeEditor,
     openFileManager,
     openTerminal,
+    openCollaboration,
+    openSystemMonitor,
     closeAllWindows: () => setOpenWindows([])
   };
 

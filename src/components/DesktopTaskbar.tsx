@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   Search, 
@@ -16,12 +16,12 @@ export const DesktopTaskbar = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // Update time every minute
-  useState(() => {
+  useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000);
     return () => clearInterval(timer);
-  });
+  }, []);
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('en-US', {
