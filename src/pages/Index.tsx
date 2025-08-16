@@ -5,11 +5,13 @@ import { AppLauncher } from '@/components/AppLauncher';
 import { DesktopIcons } from '@/components/DesktopIcons';
 import { WindowManager } from '@/components/WindowManager';
 import { Button } from '@/components/ui/button';
-import { Grid3X3, X } from 'lucide-react';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { Grid3X3, X, LogOut, User } from 'lucide-react';
 import neuralBg from '@/assets/neural-bg.jpg';
 
 const Index = () => {
   const [isAppLauncherOpen, setIsAppLauncherOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   return (
     <div 
@@ -49,8 +51,22 @@ const Index = () => {
         <X className="w-4 h-4" />
       </Button>
 
-      {/* Welcome Message (top right) */}
+      {/* User Profile & Welcome (top right) */}
       <div className="fixed top-4 right-4 z-20 glass rounded-lg p-4 max-w-sm">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <User className="w-4 h-4" />
+            <span className="text-sm font-medium">{user?.email}</span>
+          </div>
+          <Button
+            onClick={signOut}
+            size="sm"
+            variant="ghost"
+            className="h-6 w-6 p-0 hover:bg-destructive/20"
+          >
+            <LogOut className="w-3 h-3" />
+          </Button>
+        </div>
         <h2 className="text-lg font-bold bg-gradient-neural bg-clip-text text-transparent mb-2">
           Welcome to LexOS
         </h2>
