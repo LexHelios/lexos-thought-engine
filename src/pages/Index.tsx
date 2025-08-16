@@ -5,7 +5,7 @@ import { AppLauncher } from '@/components/AppLauncher';
 import { DesktopIcons } from '@/components/DesktopIcons';
 import { WindowManager } from '@/components/WindowManager';
 import { Button } from '@/components/ui/button';
-import { Grid3X3 } from 'lucide-react';
+import { Grid3X3, X } from 'lucide-react';
 import neuralBg from '@/assets/neural-bg.jpg';
 
 const Index = () => {
@@ -35,6 +35,18 @@ const Index = () => {
       >
         <Grid3X3 className="w-5 h-5 mr-2" />
         Apps
+      </Button>
+
+      {/* Emergency close button */}
+      <Button
+        onClick={() => {
+          const windowManager = (window as any).windowManager;
+          windowManager?.closeAllWindows?.();
+        }}
+        className="fixed top-4 right-20 z-50 glass neural-glow hover:bg-destructive"
+        size="sm"
+      >
+        <X className="w-4 h-4" />
       </Button>
 
       {/* Welcome Message (top right) */}

@@ -28,8 +28,10 @@ const AppWindow = ({ id, title, icon, content, isMinimized, onMinimize, onMaximi
   if (isMinimized) return null;
 
   return (
-    <Dialog open={true} onOpenChange={() => {}}>
-      <DialogContent className="max-w-5xl w-full h-[80vh] glass neural-glow border border-border p-0 flex flex-col">
+    <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-5xl w-full h-[80vh] glass neural-glow border border-border p-0 flex flex-col overflow-hidden"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         {/* Window Header */}
         <div className="flex items-center justify-between p-3 border-b border-border bg-gradient-neural text-white rounded-t-lg">
           <div className="flex items-center gap-2">
@@ -170,7 +172,8 @@ export const WindowManager = () => {
     openGitHubManager,
     openCodeEditor,
     openFileManager,
-    openTerminal
+    openTerminal,
+    closeAllWindows: () => setOpenWindows([])
   };
 
   return (

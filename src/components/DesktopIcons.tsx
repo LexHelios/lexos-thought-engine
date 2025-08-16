@@ -8,7 +8,8 @@ import {
   Terminal,
   Image,
   GitBranch,
-  Code
+  Code,
+  X
 } from 'lucide-react';
 
 export const DesktopIcons = () => {
