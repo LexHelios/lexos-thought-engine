@@ -5,6 +5,7 @@ import { GitHubManager } from '@/components/GitHubManager';
 import { AgentWorkspace } from '@/components/AgentWorkspace';
 import { AgentCollaboration } from '@/components/AgentCollaboration';
 import { SystemMonitor } from '@/components/SystemMonitor';
+import { CodeIDE } from '@/components/CodeIDE';
 import { 
   Terminal, 
   X, 
@@ -15,7 +16,8 @@ import {
   Code,
   Folder,
   Users,
-  Activity
+  Activity,
+  Monitor
 } from 'lucide-react';
 
 interface WindowProps {
@@ -184,6 +186,15 @@ export const WindowManager = () => {
     );
   };
 
+  const openCodeIDE = () => {
+    openWindow(
+      'code-ide',
+      'LexOS IDE',
+      <Monitor className="w-4 h-4" />,
+      <CodeIDE />
+    );
+  };
+
   // Expose functions globally for desktop icons to use
   (window as any).windowManager = {
     openGitHubManager,
@@ -192,6 +203,7 @@ export const WindowManager = () => {
     openTerminal,
     openCollaboration,
     openSystemMonitor,
+    openCodeIDE,
     closeAllWindows: () => setOpenWindows([])
   };
 

@@ -10,7 +10,8 @@ import {
   GitBranch,
   Code,
   Users,
-  Activity
+  Activity,
+  Monitor
 } from 'lucide-react';
 
 export const DesktopIcons = () => {
@@ -36,6 +37,9 @@ export const DesktopIcons = () => {
       case 'system-monitor':
         windowManager?.openSystemMonitor();
         break;
+      case 'code-ide':
+        windowManager?.openCodeIDE();
+        break;
       default:
         console.log(`Opening ${iconId}`);
     }
@@ -49,6 +53,7 @@ export const DesktopIcons = () => {
     { id: 'file-manager', name: 'Browser Agent', icon: <Folder className="w-8 h-8" />, x: 150, y: 50 },
     { id: 'collaboration', name: 'Agent Collab', icon: <Users className="w-8 h-8" />, x: 150, y: 150 },
     { id: 'system-monitor', name: 'System Monitor', icon: <Activity className="w-8 h-8" />, x: 150, y: 250 },
+    { id: 'code-ide', name: 'LexOS IDE', icon: <Monitor className="w-8 h-8" />, x: 150, y: 350 },
     { id: 'gallery', name: 'Gallery', icon: <Image className="w-8 h-8" />, x: 250, y: 50 },
     { id: 'settings', name: 'Settings', icon: <Settings className="w-8 h-8" />, x: 250, y: 150 },
     { id: 'trash', name: 'Trash', icon: <Trash2 className="w-8 h-8" />, x: 250, y: 450 },
