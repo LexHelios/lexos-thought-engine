@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { GitHubManager } from '@/components/GitHubManager';
 import { AgentWorkspace } from '@/components/AgentWorkspace';
+import { AgentCollaboration } from '@/components/AgentCollaboration';
+import { SystemMonitor } from '@/components/SystemMonitor';
 import { 
   Terminal, 
   X, 
@@ -11,7 +13,9 @@ import {
   GitBranch,
   FileText,
   Code,
-  Folder
+  Folder,
+  Users,
+  Activity
 } from 'lucide-react';
 
 interface WindowProps {
@@ -166,12 +170,8 @@ export const WindowManager = () => {
     openWindow(
       'collaboration',
       'Agent Collaboration',
-      <FileText className="w-4 h-4" />,
-      <div className="h-full">
-        <div className="p-4 text-center text-muted-foreground">
-          Agent Collaboration feature coming soon!
-        </div>
-      </div>
+      <Users className="w-4 h-4" />,
+      <AgentCollaboration />
     );
   };
 
@@ -179,12 +179,8 @@ export const WindowManager = () => {
     openWindow(
       'system-monitor',
       'System Monitor', 
-      <FileText className="w-4 h-4" />,
-      <div className="h-full">
-        <div className="p-4 text-center text-muted-foreground">
-          System Monitor feature coming soon!
-        </div>
-      </div>
+      <Activity className="w-4 h-4" />,
+      <SystemMonitor />
     );
   };
 

@@ -9,7 +9,8 @@ import {
   Image,
   GitBranch,
   Code,
-  X
+  Users,
+  Activity
 } from 'lucide-react';
 
 export const DesktopIcons = () => {
@@ -46,8 +47,8 @@ export const DesktopIcons = () => {
     { id: 'terminal', name: 'Research Agent', icon: <Terminal className="w-8 h-8" />, x: 50, y: 250 },
     { id: 'code-editor', name: 'Code Agent', icon: <Code className="w-8 h-8" />, x: 50, y: 350 },
     { id: 'file-manager', name: 'Browser Agent', icon: <Folder className="w-8 h-8" />, x: 150, y: 50 },
-    { id: 'collaboration', name: 'Agent Collab', icon: <X className="w-8 h-8" />, x: 150, y: 150 },
-    { id: 'system-monitor', name: 'System Monitor', icon: <Settings className="w-8 h-8" />, x: 150, y: 250 },
+    { id: 'collaboration', name: 'Agent Collab', icon: <Users className="w-8 h-8" />, x: 150, y: 150 },
+    { id: 'system-monitor', name: 'System Monitor', icon: <Activity className="w-8 h-8" />, x: 150, y: 250 },
     { id: 'gallery', name: 'Gallery', icon: <Image className="w-8 h-8" />, x: 250, y: 50 },
     { id: 'settings', name: 'Settings', icon: <Settings className="w-8 h-8" />, x: 250, y: 150 },
     { id: 'trash', name: 'Trash', icon: <Trash2 className="w-8 h-8" />, x: 250, y: 450 },
