@@ -34,6 +34,9 @@ Deno.serve(async (req) => {
     
     // Get the GitHub token from Supabase secrets
     const githubToken = Deno.env.get('GITHUB_TOKEN');
+    console.log('GitHub token status:', githubToken ? 'Found' : 'Missing');
+    console.log('GitHub token length:', githubToken ? githubToken.length : 0);
+    
     if (!githubToken) {
       console.error('GitHub token not found in environment');
       return new Response(
@@ -42,7 +45,9 @@ Deno.serve(async (req) => {
       );
     }
 
-    const { action, ...params } = await req.json();
+    const requestBody = await req.json();
+    console.log('Request body:', JSON.stringify(requestBody));
+    const { action, ...params } = requestBody;
     console.log('Action requested:', action, 'with params:', params);
 
     const githubHeaders = {
@@ -57,14 +62,21 @@ Deno.serve(async (req) => {
     switch (action) {
       case 'listRepos':
         console.log('Fetching user repositories...');
-        response = await fetch('https://api.github.com/user/repos?sort=updated&per_page=50', {
+        const reposUrl = 'https://api.github.com/user/repos?sort=updated&per_page=50';
+        console.log('Making request to:', reposUrl);
+        response = await fetch(reposUrl, {
           headers: githubHeaders,
         });
+        console.log('GitHub response status:', response.status);
+        console.log('GitHub response headers:', Object.fromEntries(response.headers.entries()));
+        
         data = await response.json();
+        console.log('GitHub response data type:', typeof data);
+        console.log('GitHub response data length:', Array.isArray(data) ? data.length : 'not array');
         
         if (!response.ok) {
-          console.error('GitHub API error:', data);
-          throw new Error(data.message || 'Failed to fetch repositories');
+          console.error('GitHub API error for listRepos:', response.status, data);
+          throw new Error(data.message || `GitHub API error: ${response.status}`);
         }
         
         console.log(`Successfully fetched ${data.length} repositories`);
@@ -73,9 +85,12 @@ Deno.serve(async (req) => {
       case 'getRepo':
         const { owner, repo } = params;
         console.log(`Fetching repository: ${owner}/${repo}`);
-        response = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+        const repoUrl = `https://api.github.com/repos/${owner}/${repo}`;
+        console.log('Making request to:', repoUrl);
+        response = await fetch(repoUrl, {
           headers: githubHeaders,
         });
+        console.log('GitHub response status:', response.status);
         data = await response.json();
         
         if (!response.ok) {
@@ -131,14 +146,18 @@ Deno.serve(async (req) => {
 
       case 'getUserInfo':
         console.log('Fetching user information...');
-        response = await fetch('https://api.github.com/user', {
+        const userUrl = 'https://api.github.com/user';
+        console.log('Making request to:', userUrl);
+        response = await fetch(userUrl, {
           headers: githubHeaders,
         });
+        console.log('GitHub response status:', response.status);
+        console.log('GitHub response headers:', Object.fromEntries(response.headers.entries()));
         data = await response.json();
         
         if (!response.ok) {
-          console.error('GitHub API error:', data);
-          throw new Error(data.message || 'Failed to fetch user information');
+          console.error('GitHub API error for getUserInfo:', response.status, data);
+          throw new Error(data.message || `GitHub API error: ${response.status}`);
         }
         
         console.log(`Successfully fetched user info: ${data.login}`);
