@@ -2,41 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* LexOS AI Operating System Design System
+All colors MUST be HSL for proper theming.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Neural Network Theme - Deep Space Blues & Purples */
+    --background: 220 15% 8%;
+    --foreground: 210 40% 95%;
+    
+    /* AI Core Colors */
+    --ai-primary: 250 100% 65%;
+    --ai-secondary: 280 85% 70%;
+    --ai-accent: 200 100% 55%;
+    --ai-glow: 250 100% 80%;
+    
+    /* Glass System */
+    --glass-bg: 220 15% 12%;
+    --glass-border: 220 20% 25%;
+    --glass-hover: 220 15% 18%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 220 15% 10%;
+    --card-foreground: 210 40% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 220 15% 10%;
+    --popover-foreground: 210 40% 95%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 250 100% 65%;
+    --primary-foreground: 220 15% 8%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 220 15% 18%;
+    --secondary-foreground: 210 40% 95%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 15% 15%;
+    --muted-foreground: 210 20% 65%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 200 100% 55%;
+    --accent-foreground: 220 15% 8%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 220 20% 25%;
+    --input: 220 15% 15%;
+    --ring: 250 100% 65%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+    
+    /* Gradients */
+    --gradient-neural: linear-gradient(135deg, hsl(var(--ai-primary)) 0%, hsl(var(--ai-secondary)) 100%);
+    --gradient-glass: linear-gradient(135deg, hsl(var(--glass-bg) / 0.8) 0%, hsl(var(--glass-bg) / 0.4) 100%);
+    --gradient-glow: radial-gradient(circle at center, hsl(var(--ai-glow) / 0.3) 0%, transparent 70%);
+    
+    /* Shadows & Effects */
+    --shadow-glow: 0 0 20px hsl(var(--ai-primary) / 0.3);
+    --shadow-neural: 0 8px 32px hsl(var(--ai-primary) / 0.2);
+    --blur-glass: blur(12px);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-glow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
 
@@ -56,8 +82,9 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark mode inherits the neural theme */
+    --background: 220 15% 8%;
+    --foreground: 210 40% 95%;
 
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
@@ -101,5 +128,34 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    background-image: var(--gradient-neural);
+    background-attachment: fixed;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  /* Glassmorphism utilities */
+  .glass {
+    background: var(--gradient-glass);
+    backdrop-filter: var(--blur-glass);
+    border: 1px solid hsl(var(--glass-border));
+  }
+  
+  .glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .neural-glow {
+    position: relative;
+  }
+  
+  .neural-glow::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: var(--gradient-neural);
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0.5;
+    filter: blur(8px);
   }
 }
